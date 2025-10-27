@@ -1,9 +1,17 @@
 <template>
   <div>
-    <!-- Navbar -->
+    <!-- Responsive Navbar -->
     <nav class="navbar">
       <div class="logo">TicketApp</div>
-      <ul class="nav-links">
+
+      <!-- Hamburger -->
+      <div class="hamburger" @click="toggleMenu">
+        <span :class="{ 'bar1': true, 'change1': menuOpen }"></span>
+        <span :class="{ 'bar2': true, 'change2': menuOpen }"></span>
+        <span :class="{ 'bar3': true, 'change3': menuOpen }"></span>
+      </div>
+
+      <ul :class="['nav-links', { 'nav-active': menuOpen }]">
         <li><router-link to="/home">Home</router-link></li>
         <li><router-link to="/dashboard">Dashboard</router-link></li>
         <li><router-link to="/tickets">Tickets</router-link></li>
@@ -55,14 +63,11 @@ export default {
   data() {
     return {
       tickets: [],
-      form: {
-        title: '',
-        description: '',
-        status: ''
-      },
+      form: { title: '', description: '', status: '' },
       editIndex: null,
       error: '',
-      success: ''
+      success: '',
+      menuOpen: false
     }
   },
   created() {
@@ -70,6 +75,9 @@ export default {
     this.tickets = storedTickets
   },
   methods: {
+    toggleMenu() {
+      this.menuOpen = !this.menuOpen;
+    },
     saveTickets() {
       localStorage.setItem('ticketapp_tickets', JSON.stringify(this.tickets))
     },
@@ -124,6 +132,8 @@ export default {
   background: #2563eb;
   padding: 1rem 2rem;
   color: white;
+  position: relative;
+  border-radius: 12px;
 }
 
 .navbar .logo {
@@ -135,10 +145,11 @@ export default {
   display: flex;
   gap: 1rem;
   list-style: none;
+  transition: max-height 0.3s ease;
 }
 
-.nav-links li a,
-.nav-links li button {
+.nav-links a,
+.nav-links button {
   color: white;
   text-decoration: none;
   background: none;
@@ -147,9 +158,49 @@ export default {
   font-weight: 500;
 }
 
-.nav-links li button:hover,
+.nav-links a.router-link-active {
+  border-bottom: 2px solid white;
+}
+
+button:hover,
 .nav-links li a:hover {
   text-decoration: underline;
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+.hamburger span {
+  width: 25px;
+  height: 3px;
+  background: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+.bar1.change1 { transform: rotate(-45deg) translate(-5px,6px); }
+.bar2.change2 { opacity: 0; }
+.bar3.change3 { transform: rotate(45deg) translate(-5px,-6px); }
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .hamburger { display: flex; }
+  .nav-links {
+    flex-direction: column;
+    position: absolute;
+    top: 70px;
+    right: 0;
+    background: #2563eb;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    border-radius: 0 0 12px 12px;
+  }
+  .nav-links.nav-active { max-height: 500px; }
+  .nav-links li { text-align: center; margin: 1rem 0; }
 }
 
 /* Ticket Section */
@@ -198,17 +249,9 @@ export default {
   font-size: 0.9rem;
 }
 
-.status.open {
-  background: #16a34a;
-}
-
-.status.in_progress {
-  background: #f59e0b;
-}
-
-.status.closed {
-  background: #6b7280;
-}
+.status.open { background: #16a34a; }
+.status.in_progress { background: #f59e0b; }
+.status.closed { background: #6b7280; }
 
 .actions {
   margin-top: 10px;
@@ -229,5 +272,3 @@ button:hover {
   background: #1e40af;
 }
 </style>
-
-

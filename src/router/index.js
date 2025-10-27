@@ -6,7 +6,7 @@ import Dashboard from '../views/Dashboard.vue'
 import TicketManagement from '../views/TicketManagement.vue'
 
 const routes = [
-  { path: '/', redirect: '/login' },
+  { path: '/', redirect: '/login' }, // default to login
   { path: '/login', name: 'Login', component: Login },
   { path: '/signup', name: 'Signup', component: Signup },
   { path: '/home', name: 'Home', component: Home, meta: { requiresAuth: true } },
@@ -21,17 +21,21 @@ const router = createRouter({
 
 // Route Guard
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem('ticketapp_session')
-  if (to.meta.requiresAuth && !isAuthenticated) {
+  const isAuthenticated = !!localStorage.getItem('ticketapp_session')
+
+  if ((to.path === '/login' || to.path === '/signup') && isAuthenticated) {
+    // logged-in users should go to home
+    next('/home')
+  } else if (to.meta.requiresAuth && !isAuthenticated) {
+    // unauthenticated users trying to access protected routes
     next('/login')
-  } else if ((to.path === '/login' || to.path === '/signup') && isAuthenticated) {
-    next('/home') // redirect logged-in users
   } else {
     next()
   }
 })
 
 export default router
+
 
 
 
