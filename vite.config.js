@@ -3,5 +3,6 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   plugins: [vue()],
-  base: '/vue-ticket/'  // <-- add this line for GitHub Pages
+  base: '/vue-ticket/'   // important for GitHub Pages
 })
+
